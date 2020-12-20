@@ -1,0 +1,123 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%		Prueba para Desarrolladores Python Odoo
+%%%%		Vico Multiservicios
+%%%%	Fecha	: Diciembre de 2020
+%%%%	Autor	: Luis Millan
+%%%%	Correo	: lmillan131@gmail.com
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt,letterpaper]{article}
+\usepackage[activeacute,spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[letterpaper,includeheadfoot, top=0.5cm, bottom=3.0cm, right=2.0cm, left=2.0cm]{geometry}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{amssymb}
+\usepackage{url}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{subfig}
+\usepackage{listings}
+\usepackage{mathrsfs,amsmath}
+\lstset{language=C, tabsize=4,framexleftmargin=5mm,breaklines=true}
+
+% =============== Inicio de Documento =============== 
+\begin{document}
+% =============== Portada =============== 
+\newpage
+\pagestyle{fancy}
+\fancyhf{}
+\vspace*{6cm}
+\begin{center}
+\Huge  {Prueba de Desarrolladores Python - Odoo ERP}\\
+\vspace{1cm}
+\end{center}
+\vfill
+\begin{flushright}
+\begin{tabular}{ll}
+Autor: & Luis E. Millán U.\\
+& \today\\
+& Aragua, Venezuela.
+\end{tabular}
+\end{flushright}
+
+% =============== Encabezado y pie de Pagina ===============
+\newpage
+\pagestyle{fancy}
+\fancyhf{}
+%Encabezado
+\fancyhead[L]{\rightmark}
+\fancyhead[L]{\small \rm \textit{Sección \rightmark}}
+\fancyhead[R]{\small \rm \textbf{\thepage}}
+%Pie 
+\fancyfoot[L]{\small \rm \textit{Br. L. Millán}}
+\fancyfoot[R]{\small \rm \textit{Odoo ERP}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+\tableofcontents
+%==========================================%
+%  Desarrollo
+%==========================================%
+\newpage	
+\section{Introducción}
+	El presente documento formaliza la presentación de una prueba de admisión para optar por una vacante como desarrollador de sistemas python en Odoo para la empresa Vico Multiservicios. Consta de dos Ejercicios relacionados con el funcionamiento y el desarrollo de Odoo en su versión Comunity 14.0.
+\section{Desarrollo}
+\subsection{Configuración y Funcionalidad}
+\subsubsection{Configurar múltiples ubicaciones en almacén y rutas multietapa}
+Con la finalidad de tener un mejor control sobre los productos que entran o salen del o los almacenes de una empresa se habilitan las opciones de \textbf{Ubicaciones de Almacenamiento} y \textbf{Rutas Multietapa}, para ello debe estar instalado el módulo de inventario y desde su panel de configuración es posible habilitar dichas opciones.
+\subsubsection{Crear Productos y Ubicaciones}
+Para realizar pruebas es necesario crear productos y ubicaciones por ende, el módulo de inventario también proporciona la posibilidad de gestionar los productos. Para crearlos se debe dirigir a la pestaña de productos, las ubicaciones pueden ser gestionadas desde la pestaña de configuración del módulo de inventario.
+\subsubsection{Definir Ruta de recepción de mercancía en 2 Pasos}
+Por defecto, al instalar el módulo de inventario Odoo proporciona Rutas de recepción y entrega de productos, ambas en un solo paso, en ocasiones las empresas requieren dividir estás rutas en más de un paso, bien sea por control de calidad o de seguridad; para configurar estas rutas es necesario acceder a la configuración de almacenes, estando ahí se debe editar el almacén que desee configurar y seleccionar la recepción de bienes en 2 o 3 pasos.
+\subsubsection{Asignar inventario y ubicación de productos, a partir de una orden de compra}
+Las ordenes de compras son accesibles desde el módulo de gestión de compras, al crear una orden de compra se selecciona el producto, la cantidad, el costo y en la pestaña \textbf{Otra Información} se puede seleccionar una ruta de entrega o ubicación.
+\subsubsection{Definir ruta de despacho de pedidos en 3 pasos}
+Las rutas de despacho de pedidos se configuran al igual que las rutas de recepción, si se quiere se puede tomar una ruta de recepción de dos pasos y una ruta de despacho de 3 pasos.
+\subsubsection{Validar despacho de productos a partir de una orden de venta}
+Para validar una orden de venta en especial una de tres pasos, primero se debe crear una orden de venta desde el módulo de ventas, si se ha configurado correctamente, esta tomará el despacho en tres pasos por defecto, realizado este paso se debe confirmar la orden, luego se indicará que existen tres transferencias asociadas; posteriormente se debe ir al módulo de inventario y validar las tres transferencias pendientes, esto completará la orden de venta a la cual se debe crear una factura y finalizar.
+
+\subsection{Desarrollo de un Módulo}
+Para el desarrollo de este módulo no se procede a crear un modelo nuevo, por el contrario se heredarán los modelos: res.partner, product.product, product.template, sale.order y sale.order.line. De esa forma también serán heredadas las vistas y los métodos pertinenetes que seran descritos a continuación.
+\subsubsection{Definir Campos y Funcionalidades para el Modelo de Contacto}
+\begin{enumerate}
+	\item \textbf{Es consignatorio:} es un campo tipo booleano.
+	\item \textbf{Número identificador:} es un entero de 5 dígitos único para cada contacto consignatorio.
+	\item \textbf{Fecha de Nacimiento:} es un campo tipo fecha que será indicado al momento de crear el contacto.
+	\item \textbf{Edad:} es un campo entero computado que se relaciona con la fecha de nacimiento.
+	\item \textbf{Contactos en común:} relacionar un modelo consigo mismo podría tornarse laborioso dependiendo de lo que se desee hacer, no se puede hacer un campo Many2many directamente, en su lugar se podría crear un modelo nuevo que sirva de pivote para mostrar la información solicitada, sin embargo, en vista de que no se especifica en realidad el uso de este campo se utilizará un campo existente \textbf{child ids} , este campo ya existe en el modelo de contactos y relaciona contactos entre sí.
+	\item \textbf{Productos Asociados:} Es un campo tipo One2many que referencia a los productos, este campo tiene limitaciones de visibilidad relacionadas al campo Es Consignatorio.
+	\item \textbf{Sexo:} es un campo tipo selección con tres opciones (M, F, O).
+	\item \textbf{Verificar la relación de productos al eliminar contactos:} Al utilizar un campo One2many Odoo no permite eliminar el contacto sin antes eliminar las asociaciones, por lo tanto este item está resuelto por defecto.
+	\item \textbf{Incluir Campos nuevos en la vista de formulario:} Existen dos opciones para la solución de este item, se pueden editar las vistas directamente desde el framework de odoo con el modo desarrollador o heredar las vistas desde el código del nuevo módulo y agregar los campos requeridos, para esta ocación se utilizará la segunda opción.
+	\item \textbf{Incluir número identificador en la vista de arbol:} Al igual que el item anterior se puede hacer de las dos formas.	
+\end{enumerate}
+
+\subsubsection{Definir Campos y Funcionalidades para el Modelo de Producto}
+\begin{enumerate}
+	\item \textbf{Consignatario:} Es un campo Many2one relacionado con res.partner, este campo está limitado a aquellos contactos que tengan el campo Es consignatorio habilitado.
+	\item \textbf{Marca y Modelo:} Campos tipo Char simples.
+	\item \textbf{Codificar la referencia Interna:} Se debe heredar el método de creación de productos para agregarle la función de crear la referencia interna, para evitar fallas se hace que los campos marca y modelo sean obligatorios.
+	\item \textbf{Código de Barras Aleatorio:} Al heredar el método de creación de productos también se le agrega la función de generar un código de barras aleatorio, este se genera con la función random de python, para evitar fallas se verifica que el código generado no coincida con ninguno de los códigos de los demás productos.
+	\item \textbf{Incluir campos nuevos en vista tipo formulario:} Será Heredada la vista tipo formulario para añadir los campos nuevos.
+\end{enumerate}
+\subsubsection{Definir Campos y Funcionalidades para el Modelo de Línea de Pedido}
+\begin{enumerate}
+	\item \textbf{ID Consignatorio de Producto:} Campo que se relaciona con el producto de la línea de pedido, el producto a su vez se relaciona con el contacto asociado y finalmente con el ID consignatorio descrito anteriormente.
+	\item \textbf{Incluir Campo en la vista Arbol:} se hereda la vista correspondiente y se agrega el campo recién creado.
+\end{enumerate}
+\subsubsection{Desarrollar un Reporte PDF}
+El reporte debe mostrar los productos que fueron despachados en el día. Dicho reporte debe generarse a partir de los movimientos de salida de mercancía validados, y debe presentar un listado con la siguiente información:
+\begin{itemize}
+	\item Referencia de la Orden de Venta.
+	\item Refernecia Interna del Producto.
+	\item Ubicación Original del Producto en Bodega (No Requerida pero Deseable).
+\end{itemize}
+\section{Conclusión}
+
+	La acción que retorna el reporte se relacionó con el submenu Ventas/Informes/Diario y ejecuta un reporte PDF con la información solicitada de aquellos pedidos de ventas Facturados del dia en curso, en caso de no existir, no despliega ningun reporte. El ID Consignatorio es creado tomando en cuenta todos los demás contactos existente con la finalidad de no repetirlo, es creado únicamente al crear un contacto y no puede ser modificado desde la vista tipo form, la edad es un campo computado, por lo tanto se recalcula cada vez que se accede al registro, esto quiere decir que puede ser actualizable junto con la fecha de nacimiento, tanto el código de barras como la referencia de los productos son generados unicamente al crear un nuevo registro de product.product; la marca, el modelo y el contacto consignatorio asociado al producto son creados junto con el product.template y se actualizan en el product.product, estos últimos tres campos se hicieron obligatorios para el modelo.
+
+\end{document}
