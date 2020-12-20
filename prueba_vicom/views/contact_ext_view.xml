@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data>
+    <record id="contact_extend_form" model="ir.ui.view">
+        <field name="name">contact.form.extend</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="html">
+          <field name="category_id" position="after">
+            <field name="consignment"/>
+            <field name="consignment_id" attrs="{'invisible': [('consignment', '=', False)]}" readonly="True"/>
+            <field name="birthdate"/>
+            <field name="age_num" readonly="True"/>
+            <field name="sex"/>
+            <field name="child_ids" string="Contactos en Comun"/>
+            <field name="products" attrs="{'invisible': [('consignment', '=', False)]}"/>
+          </field>
+        </field>
+    </record>
+
+    <record id="contact_extend_tree" model="ir.ui.view">
+        <field name="name">contact.tree.extend</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="html">
+          <field name="phone" position="after">
+            <field name="consignment_id"/>
+          </field>
+        </field>
+    </record>
+  </data>
+</odoo>

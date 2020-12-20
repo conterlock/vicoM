@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+      <record id="paperformat_sale_summary_report" model="report.paperformat">
+          <field name="name">Sale Summary</field>
+          <field name="default" eval="False"/>
+          <field name="format">A4</field>
+          <field name="page_width">0</field>
+          <field name="page_width">0</field>
+          <field name="orientation">Portrait</field>
+          <field name="margin_top">30</field>
+          <field name="margin_bottom">28</field>
+          <field name="margin_right">7</field>
+          <field name="margin_left">7</field>
+          <field name="header_line" eval="False"/>
+          <field name="header_spacing">15</field>
+          <field name="dpi">90</field>
+      </record>
+
+      <record id="sale_summary_report" model="ir.actions.report">
+          <field name="name">Sale Summary Report</field>
+          <field name="model">sale.order</field>
+          <field name="report_type">qweb-pdf</field>
+          <field name="report_name">prueba_vicom.sale_summary_report_view</field>
+          <field name="report_file">prueba_vicom.paperformat_sale_summary_report</field>
+          <field name="binding_model_id" ref="base.contact"/>
+          <field name="binding_type">report</field>
+      </record>
+
+      <template id="sale_summary_report_view">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2>Reporte Diario</h2>
+                    <h3>Productos Despachados al Dia de Hoy</h3>
+                    <table class="table table-condensed table-bordered">
+                        <thead>
+                            <th style="width: 30%">Referencia de Venta</th>
+                            <th class="text-center" style="width: 20%">Ref. Producto</th>
+                            <th class="text-center" style="width: 10%">Cantidad</th>
+                            <th class="text-center" style="width: 20%">Almacen</th>
+                            <th class="text-center" style="width: 20%">Fecha</th>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="docs" t-as="doc">
+                                <tr>
+                                    <td><span t-esc="doc['name']"/></td>
+                                    <td class="text-center">
+                                        <t t-foreach="doc['order_line']" t-as="regi">
+                                            <span t-esc="regi['product_id'].default_code"/><br/><br/>
+                                        </t>
+                                    </td>
+                                    <td class="text-center">
+                                        <t t-foreach="doc['order_line']" t-as="regi">
+                                            <span t-esc="str(regi['product_uom_qty'])"/><br/><br/>
+                                        </t>
+                                    </td>
+                                    <td class="text-center"><span t-esc="doc['warehouse_id'].name"/></td>
+                                    <td class="text-center"><span t-esc="doc['date_report']"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <record model="ir.actions.server" id="print_instance">
+        <field name="name">Res Partner Server Action</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="state">code</field>
+        <field name="code">action = model.send_report_daily()</field>
+    </record>
+
+    <menuitem id="action_report_summary" parent="sale.menu_sale_report" name="Diario" sequence="2"
+          action="print_instance" groups="base.group_user"/>
+
+
+</odoo>

@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_prueba_vicom,prueba.vicom.public,base.model_res_users,base.group_public,1,1,1,1
+access_pivot,prueba.vicom.pivot,partner.delivery.zone,base.group_public,1,1,1,1
